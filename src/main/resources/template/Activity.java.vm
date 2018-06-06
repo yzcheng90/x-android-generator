@@ -1,0 +1,210 @@
+package
+
+import java.util.HashMap;${package}.controller;
+
+
+import android.app.Activity;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialog;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import com.ski.mobile.app.psm.sk_psm.R;
+import com.ski.mobile.app.psm.sk_psm.base.BaseActivity;
+import com.ski.mobile.app.psm.sk_psm.entity.PageUtils;
+import com.ski.mobile.app.psm.sk_psm.widget.StateButton;
+import com.ski.mobile.app.psm.sk_psm.widget.StateView;
+import java.util.HashMap;
+import butterknife.BindView;
+import cn.droidlover.xdroidmvp.base.SimpleRecAdapter;
+import cn.droidlover.xdroidmvp.router.Router;
+import cn.droidlover.xrecyclerview.RecyclerItemCallback;
+import cn.droidlover.xrecyclerview.XRecyclerContentLayout;
+import cn.droidlover.xrecyclerview.XRecyclerView;
+
+/**
+ * ${comments}
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public class ${className}Activity extends BaseActivity<${className}Present> {
+
+    @BindView(R.id.title)
+    TextView title;
+    @BindView(R.id.back_btn)
+    LinearLayout backBtn;
+    @BindView(R.id.more_icon)
+    ImageView moreIcon;
+    @BindView(R.id.more_btn)
+    LinearLayout moreBtn;
+
+    @BindView(R.id.contentLayout)
+    XRecyclerContentLayout contentLayout;
+
+    ${className}Adapter adapter;
+    StateView errorView;
+
+    BottomSheetDialog dialogs;
+
+    public void initToolbar(String mTitle) {
+        title.setText(mTitle);
+        backBtn.setOnClickListener((v) -> {
+            finish();
+        });
+        moreIcon.setImageResource(R.mipmap.add_icon);
+        moreBtn.setOnClickListener((v)->{
+            ${className}EditActivity.launch(context,null,1);
+        });
+    }
+
+    @Override
+    public void initData(Bundle savedInstanceState) {
+        initToolbar("${comments}");
+        initAdapter();
+        reLoad(1);
+    }
+
+    public void reLoad(int index) {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("page", index + "");
+        hashMap.put("limit", "20");
+        getmPresenter().getList(hashMap);
+    }
+
+    public void delete(HashMap<String,Object> model){
+
+        //删除的参数自己写
+        getmPresenter().delete(hashMap);
+    }
+
+    private void initAdapter() {
+        contentLayout.getRecyclerView().gridLayoutManager(context, 1);
+        contentLayout.getRecyclerView().setAdapter(getAdapter());
+        contentLayout.getRecyclerView().setOnRefreshAndLoadMoreListener(new XRecyclerView.OnRefreshAndLoadMoreListener() {
+            @Override
+            public void onRefresh() {
+                reLoad(1);
+            }
+
+            @Override
+            public void onLoadMore(int page) {
+                reLoad(page);
+            }
+        });
+
+        if (errorView == null) {
+            errorView = new StateView(context);
+        }
+
+        errorView.setClickEvent((v) -> {
+            reLoad(1);
+        }); //设置了点击事件
+        contentLayout.errorView(errorView);
+        contentLayout.loadingView(View.inflate(context, R.layout.view_loading, null));
+        contentLayout.showLoading();
+        contentLayout.getRecyclerView().useDefLoadMoreView();
+    }
+
+
+    public SimpleRecAdapter getAdapter() {
+        if (adapter == null) {
+            adapter = new CheckAreaAdapter(context);
+            adapter.setRecItemClick(new RecyclerItemCallback<HashMap<String, Object>, ${className}Adapter.ViewHolder>() {
+                @Override
+                public void onItemClick(int position, HashMap<String, Object> model, int tag, ${className}Adapter.ViewHolder holder) {
+                    super.onItemClick(position, model, tag, holder);
+                    showdolg(model);
+                }
+            });
+        }
+        return adapter;
+    }
+
+    public void showSuccess(PageUtils<HashMap<String, Object>> data) {
+        if (data.getCurrPage() > 1) {
+            getAdapter().addData(data.getList());
+        } else {
+            getAdapter().setData(data.getList());
+        }
+        contentLayout.getRecyclerView().setPage(data.getCurrPage(), data.getTotalPage());
+        if (getAdapter().getItemCount() < 1) {
+            errorView.setMsg("没有数据");
+            contentLayout.showError();
+            return;
+        }
+    }
+
+    public void showDeleteSuccess(){
+        //删除成功
+    }
+
+    private void showdolg(HashMap<String, Object> model) {
+        View view = getLayoutInflater().inflate(R.layout.layout_upkeep_admin_management_popup_window, null);
+        TextView text1 = view.findViewById(R.id.text1);
+        TextView text2 = view.findViewById(R.id.text2);
+        text1.setText("修改");
+        text2.setText("删除");
+        LinearLayout btn1 = (LinearLayout) view.findViewById(R.id.btn1);
+        LinearLayout btn2 = (LinearLayout) view.findViewById(R.id.btn2);
+        LinearLayout btn4 = view.findViewById(R.id.btn4);
+
+        dialogs = new BottomSheetDialog(this);
+        dialogs.setContentView(view);
+        dialogs.show();
+        dialogs.setOnDismissListener((DialogInterface dialog) -> {
+            dialogs = null;
+        });
+
+        //修改
+        btn4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogs.dismiss();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("info",model);
+                ${className}EditActivity.launch(context,bundle,1);
+            }
+        });
+
+        //删除
+        btn4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogs.dismiss();
+                delete(model);
+            }
+        });
+
+
+        //取消
+        btn4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogs.dismiss();
+            }
+        });
+    }
+
+    @Override
+    public ${className}Present newP() {
+        return new ${className}Present();
+    }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.${moduleNameLower}_activity;
+    }
+
+    public static void launch(Activity activity, Bundle bundle, int requestCode) {
+        Router.newIntent(activity)
+                .to(${className}Activity.class)
+                .data(bundle)
+                .requestCode(requestCode)
+                .launch();
+    }
+	
+}

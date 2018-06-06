@@ -1,0 +1,139 @@
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Switch;
+import android.widget.TextView;
+import com.ski.mobile.app.psm.sk_psm.R;
+import com.ski.mobile.app.psm.sk_psm.base.BaseActivity;
+import com.ski.mobile.app.psm.sk_psm.widget.DialogLoading;
+import com.ski.mobile.app.psm.sk_psm.widget.StateButton;
+import java.util.HashMap;
+import butterknife.BindView;
+import butterknife.OnClick;
+import cn.droidlover.xdroidmvp.router.Router;
+
+
+/**
+ * ${comments}
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public class ${className}EditActivity extends BaseActivity<${className}EditPresent> {
+
+    @BindView(R.id.back_btn)
+    LinearLayout backBtn;
+    @BindView(R.id.title)
+    TextView title;
+    @BindView(R.id.more_icon)
+    ImageView moreIcon;
+    @BindView(R.id.more_btn)
+    LinearLayout moreBtn;
+    @BindView(R.id.text)
+    TextView text;
+    @BindView(R.id.layout_text)
+    LinearLayout layoutText;
+
+#foreach($genData in $GenData.entrySet())
+    @BindView(R.id.$genData.key)
+    EditText $genData.key;
+#end
+
+    @BindView(R.id.submit)
+    StateButton submit;
+
+    HashMap<String,Object> model;
+    DialogLoading dialogLoading;
+
+    public void initToolbar(String mTitle) {
+        title.setText(mTitle);
+        backBtn.setOnClickListener((v) -> {
+            finish();
+        });
+    }
+
+    @Override
+    public void initData(Bundle savedInstanceState) {
+        initToolbar("${comments}编辑");
+        model = (HashMap<String, Object>) getIntent().getExtras().getSerializable("info");
+        reLoad();
+        dialogLoading = new DialogLoading(context);
+    }
+
+    public void showLoading(){
+        dialogLoading.show();
+    }
+
+    public void hideLoading(){
+        dialogLoading.dismiss();
+    }
+
+    @OnClick(R.id.submit)
+    public void clickEvent(View view){
+        switch (view.getId()){
+            case R.id.submit:
+                submit();
+                break;
+        }
+    }
+
+    public void submit(){
+        HashMap<String,Object> param = new HashMap<>();
+
+    #foreach($genData in $GenData.entrySet())
+        if(model.get("$genData.key") != null){
+            param.put("$genData.key",model.get("$genData.key"));
+        }
+    #end
+
+        showLoading();
+        getmPresenter().submit(param);
+    }
+
+    public void reLoad() {
+        HashMap<String, Object> hashMap = new HashMap<>();
+
+        //查询参数自己写
+
+        getmPresenter().query(hashMap);
+    }
+
+    public void querySuccess(HashMap<String,Object> result){
+    #foreach($genData in $GenData.entrySet())
+        if(result.get("$genData.key") != null){
+            $genData.key .setText(result.get("$genData.key"));
+        }
+    #end
+    }
+
+
+    public void showSuccess(){
+        //删除或 更新 操作成功
+    }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.${moduleNameLower}_edit_activity;
+    }
+
+
+    @Override
+    public ${className}EditPresent newP() {
+        return new ${className}EditPresent();
+    }
+
+    public static void launch(Activity activity, Bundle bundle, int requestCode) {
+        Router.newIntent(activity)
+                .to(${className}EditActivity.class)
+                .data(bundle)
+                .requestCode(requestCode)
+                .launch();
+    }
+
+}

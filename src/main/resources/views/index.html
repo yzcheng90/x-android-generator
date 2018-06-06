@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>代码生成工具</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+</head>
+<body>
+<div class="panel panel-default" id="app" v-cloak>
+    <div class="panel-heading">列表+增删改查代码生成工具</div>
+    <div style="padding: 10px 0 20px 10px;">
+        <div  class="panel-body">
+            <div class="form-group col-sm-4">
+                <input type="text" class="form-control"  v-model="q.moduleNameCS" placeholder="模块名（中文注释）" value="用户列表" >
+            </div>
+            <a class="btn btn-default" @click="generator">一键生成</a>
+        </div>
+        <div class="panel-body">
+            <div class="form-group col-sm-4">
+                <input type="text" class="form-control"  v-model="q.moduleName" placeholder="模块名" value="UserList">
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="form-group col-sm-4">
+                <textarea class="form-control" rows="10" v-model="q.moduleData" placeholder="JSON串">{"user":"admin","sex":"男","mobile":"13888888888"}</textarea>
+            </div>
+        </div>
+        <br>
+        <ul>
+            <li>针对Android项目代码生成工具可在线生成activity、activity.xml、editActivity、edit_activity.xml、adapter、adapter.xml、present、editPresent代码，生成后只须要复制到Android项目对应的包模块中就可以</li>
+            <li>其他项目：<a href="https://github.com/yzcheng90/" target="_blank">https://github.com/yzcheng90/</a></li>
+            <li>如需关注项目最新动态，请Watch、Star项目，同时也是对项目最好的支持</li>
+        </ul>
+    </div>
+</div>
+</body>
+
+<script src="libs/jquery.min.js"></script>
+<script src="libs/vue.min.js"></script>
+<script src="libs/router.js"></script>
+<script src="libs/bootstrap.min.js"></script>
+<script src="libs/fastclick.min.js"></script>
+<script src="libs/app.js"></script>
+<script src="plugins/layer/layer.js"></script>
+<script src="js/index.js"></script>
+
+<script>
+    var vm = new Vue({
+        el:'#app',
+        data:{
+            q:{
+                moduleName: null,
+                moduleNameCS: null,
+                moduleData: null
+            }
+        },
+        methods: {
+            generator: function() {
+                console.log("==============="+JSON.stringify(vm.q));
+                $.ajax({
+                    type: "POST",
+                    url: "/sys/generator/setParam",
+                    contentType: "application/json",
+                    data: JSON.stringify(vm.q),
+                    success: function(r){
+                        if(r.code === 0){
+                            console.log("==================操作成功！");
+                            location.href = "sys/generator/download";
+                        }else{
+                            alert(r.msg);
+                        }
+                    }
+                });
+            }
+        }
+    });
+</script>
+
+</html>

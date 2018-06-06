@@ -1,0 +1,73 @@
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.ski.mobile.app.psm.sk_psm.base.AppBaseResult;
+import com.ski.mobile.app.psm.sk_psm.entity.PageUtils;
+import com.ski.mobile.app.psm.sk_psm.net.Api;
+import com.ski.mobile.app.psm.sk_psm.ui.${className}Activity;
+import java.util.HashMap;
+import cn.droidlover.xdroidmvp.mvp.XPresent;
+import cn.droidlover.xdroidmvp.net.ApiSubscriber;
+import cn.droidlover.xdroidmvp.net.NetError;
+import cn.droidlover.xdroidmvp.net.XApi;
+
+/**
+ * ${comments}
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public class ${className}Present extends XPresent<${className}EditActivity> {
+
+    public void save(HashMap<String, Object> map) {
+        AppBaseResult appBaseResult = new AppBaseResult();
+        appBaseResult.setEncryptData(map);
+        Api.getCpsService().save(appBaseResult)
+                .compose(XApi.<AppBaseResult>getApiTransformer())
+                .compose(XApi.<AppBaseResult>getScheduler())
+                .compose(getV().<AppBaseResult>bindToLifecycle())
+                .subscribe(new ApiSubscriber<AppBaseResult>() {
+                    @Override
+                    protected void onFail(NetError error) {
+                        getV().showError(error);
+                    }
+
+                    @Override
+                    public void onNext(AppBaseResult result) {
+                        if (result.getCode() == AppBaseResult.SUCCESS) {
+                            getV().showSuccess();
+                        } else {
+                            getV().showError(new NetError("请求错误！", NetError.OtherError));
+                        }
+                    }
+
+                });
+    }
+
+
+    public void update(HashMap<String, Object> map) {
+        AppBaseResult appBaseResult = new AppBaseResult();
+        appBaseResult.setEncryptData(map);
+        Api.getCpsService().update(appBaseResult)
+                .compose(XApi.<AppBaseResult>getApiTransformer())
+                .compose(XApi.<AppBaseResult>getScheduler())
+                .compose(getV().<AppBaseResult>bindToLifecycle())
+                .subscribe(new ApiSubscriber<AppBaseResult>() {
+                    @Override
+                    protected void onFail(NetError error) {
+                        getV().showError(error);
+                    }
+
+                    @Override
+                    public void onNext(AppBaseResult result) {
+                        if (result.getCode() == AppBaseResult.SUCCESS) {
+                            getV().showSuccess();
+                        } else {
+                            getV().showError(new NetError("请求错误！", NetError.OtherError));
+                        }
+                    }
+
+                });
+    }
+}
