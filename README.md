@@ -1,6 +1,21 @@
 # x-android-generator
 
-针对Android项目代码生成工具可在线生成activity、activity.xml、editActivity、edit_activity.xml、adapter、adapter.xml、present、editPresent代码，生成后只须要复制到Android项目对应的包模块中就可以
+针对 <a href='https://github.com/yzcheng90/x-android'>x-android项目</a>  
+适用 <a href='https://github.com/limedroid/XDroidMvp'>XDroidMvp项目</a>  
+
+生成后可能须要少量修改代码
+
+代码生成工具可在线生成
+- activity.java
+- activity.xml
+- editActivity.java
+- edit_activity.xml
+- adapter.java
+- adapter.xml
+- present.java
+- editPresent.java
+
+生成后只须要复制到Android项目对应的包模块中就可以
 
 
 ![image](https://github.com/yzcheng90/x-android-generator/blob/master/img/1.jpg)
