@@ -5,3 +5,11 @@
 
 ![image](https://github.com/yzcheng90/x-android-generator/blob/master/img/1.jpg)
 ![image](https://github.com/yzcheng90/x-android-generator/blob/master/img/2.png)
+
+
+
+# 本地部署
+
+下载源码
+Eclipse、IDEA运行Application.java，则可启动项目
+项目访问路径：http://localhost:8085
